@@ -1,0 +1,123 @@
+/* BXYZ:..:eliot@bosmanxyz.xyz:..:.www.bosmanxyz.xyz */
+
+@layer layout {
+  .skarm-lins {
+    display: contents;
+  }
+
+  .skarm-falt {
+    min-block-size: 100dvh;
+  }
+
+  .skarm-svg {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+  }
+
+  .skarm-glas {
+    display: none;
+  }
+}
+
+@layer overrides {
+  html[data-skarm="ror"],
+  html[data-skarm="ror"] body {
+    overflow: hidden;
+    overscroll-behavior: none;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    background: var(--prov-falt);
+  }
+
+  html[data-skarm="ror"] .skarm-lins {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-mosaik);
+    overflow: clip;
+    contain: paint;
+    filter: url("#skarm-fat") contrast(1.16) saturate(0.7) brightness(0.88);
+  }
+
+  html[data-skarm="ror"] .skarm-falt {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-mosaik);
+    block-size: auto;
+    min-block-size: 0;
+    overflow: auto;
+    overscroll-behavior: none;
+    scrollbar-width: none;
+  }
+
+  html[data-skarm="ror"] .skarm-falt::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-skarm="ror"] .prov-yta,
+  html[data-skarm="ror"] .rull-pekare,
+  html[data-skarm="ror"] .horn,
+  html[data-skarm="ror"] .filter {
+    position: absolute;
+  }
+
+  html[data-skarm="ror"] .skarm-glas {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-skarm);
+    pointer-events: none;
+  }
+
+  html[data-skarm="ror"] .skarm-glas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.28) 0 1px,
+      transparent 1px 3px
+    );
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  html[data-skarm="ror"] .skarm-glas::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        rgb(255 0 70 / 0.055) 0 1px,
+        rgb(0 255 80 / 0.04) 1px 2px,
+        rgb(40 90 255 / 0.055) 2px 3px
+      ),
+      radial-gradient(120% 88% at 48% 38%, rgb(255 255 255 / 0.07), transparent 48%),
+      radial-gradient(ellipse at center, transparent 62%, rgb(0 0 0 / 0.28) 100%);
+    mix-blend-mode: overlay;
+  }
+
+  @media (max-width: 47.99rem) {
+    html[data-skarm="ror"] .krom {
+      position: absolute;
+    }
+
+    html[data-skarm="ror"] .horn,
+    html[data-skarm="ror"] .filter {
+      position: static;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    html[data-skarm="ror"] .skarm-lins {
+      filter: url("#skarm-fat") contrast(1.08) saturate(0.85);
+    }
+
+    html[data-skarm="ror"] .skarm-glas::before,
+    html[data-skarm="ror"] .skarm-glas::after {
+      opacity: 0.25;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 // BXYZ:..:eliot@bosmanxyz.xyz:..:.www.bosmanxyz.xyz
 
 import { vaxGrupp } from "./animations.js";
+import { lasLage, lasRut, lyftLager, skrivLage } from "./rut.js";
 
 const STORLEK = {
   liten: "liten",
@@ -13,10 +14,6 @@ const RORELSE = {
   anpassar: "anpassar",
 };
 
-const VIKT = {
-  jamn: "jamn",
-};
-
 const LAGE = {
   rut: "rut",
 };
@@ -25,16 +22,51 @@ function slotFor(el) {
   return el.closest(".fonster-slot");
 }
 
-function sparFor(el) {
-  return el.closest("[data-spar]")?.dataset.spar;
-}
-
 function synligaRekt(mosaik) {
   const vy = window.innerHeight;
   return [...mosaik.querySelectorAll(".fonster[data-fonster]")]
-    .filter((el) => el.dataset.tillstand !== "stangd")
     .map((el) => ({ el, first: el.getBoundingClientRect() }))
     .filter(({ first }) => first.bottom > 0 && first.top < vy && first.width > 0);
+}
+
+function sparaVila(slot) {
+  const lage = lasLage(slot);
+  slot.dataset.vilaKol = String(lage.kol);
+  slot.dataset.vilaRad = String(lage.rad);
+  slot.dataset.vilaKspann = String(lage.kspann);
+  slot.dataset.vilaRspann = String(lage.rspann);
+}
+
+function aterstallVila(slot) {
+  if (!slot.dataset.vilaKol) {
+    return;
+  }
+  skrivLage(slot, {
+    kol: Number(slot.dataset.vilaKol),
+    rad: Number(slot.dataset.vilaRad),
+    kspann: Number(slot.dataset.vilaKspann),
+    rspann: Number(slot.dataset.vilaRspann),
+  });
+  delete slot.dataset.vilaKol;
+  delete slot.dataset.vilaRad;
+  delete slot.dataset.vilaKspann;
+  delete slot.dataset.vilaRspann;
+}
+
+function vaxIRuta(mosaik, slot) {
+  const lage = lasLage(slot);
+  const rut = lasRut(mosaik);
+  const vyRader = Math.max(
+    lage.rspann,
+    Math.round((window.innerHeight - rut.pad * 2 + rut.gap) / Math.max(rut.radH + rut.gap, 1)),
+  );
+  sparaVila(slot);
+  skrivLage(slot, {
+    kol: lage.kol,
+    rad: lage.rad,
+    kspann: Math.max(1, rut.kol - lage.kol + 1),
+    rspann: Math.min(Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--rad-spann-max"), 10) || 24, vyRader),
+  });
 }
 
 export function skapaWm({ mosaik, onAndring }) {
@@ -64,16 +96,16 @@ export function skapaWm({ mosaik, onAndring }) {
     });
   }
 
-  function sattVikt(sparId) {
-    mosaik.dataset.vikt = sparId || VIKT.jamn;
-  }
-
   function fokusera(id) {
     const el = elFor(id);
-    if (!el || el.dataset.tillstand === "stangd") {
+    if (!el) {
       return;
     }
     fokusId = id;
+    const slot = slotFor(el);
+    if (slot) {
+      lyftLager(slot);
+    }
     fonstren().forEach((post) => {
       post.dataset.fokus = post.dataset.fonster === id ? "aktiv" : "inaktiv";
     });
@@ -85,27 +117,16 @@ export function skapaWm({ mosaik, onAndring }) {
     if (!el) {
       return;
     }
-    delete el.dataset.tillstand;
-    const slot = slotFor(el);
-    if (slot) {
-      delete slot.dataset.tillstand;
-    }
     fokusera(id);
     el.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
 
-  function lagg(slot, spar) {
+  function lagg(slot) {
     const el = slot.querySelector(".fonster");
-    if (el) {
-      if (el.dataset.enheter) {
-        el.style.setProperty("--enheter", el.dataset.enheter);
-      }
-      if (!el.dataset.storlek) {
-        el.dataset.storlek = STORLEK.liten;
-      }
-      el.dataset.ursprung = spar.dataset.spar;
+    if (el && !el.dataset.storlek) {
+      el.dataset.storlek = STORLEK.liten;
     }
-    spar.append(slot);
+    mosaik.append(slot);
   }
 
   function stang(id) {
@@ -116,21 +137,11 @@ export function skapaWm({ mosaik, onAndring }) {
     if (el.dataset.lage === LAGE.rut || el.dataset.storlek === STORLEK.stor) {
       return minska(id);
     }
-    el.dataset.tillstand = "stangd";
-    const slot = slotFor(el);
-    if (slot) {
-      slot.dataset.tillstand = "stangd";
-    }
-    if (fokusId === id) {
-      const kvar = fonstren().find((post) => post.dataset.tillstand !== "stangd");
-      fokusId = kvar ? kvar.dataset.fonster : null;
-    }
-    onAndring?.({ fokusId });
   }
 
   async function oka(id) {
     const el = elFor(id);
-    if (!el || el.dataset.tillstand === "stangd" || vaxer) {
+    if (!el || vaxer) {
       return;
     }
     if (el.dataset.lage === LAGE.rut || el.dataset.storlek === STORLEK.stor) {
@@ -140,13 +151,19 @@ export function skapaWm({ mosaik, onAndring }) {
     fonstren().forEach((post) => {
       if (post !== el && post.dataset.storlek === STORLEK.stor) {
         post.dataset.storlek = STORLEK.liten;
+        const annan = slotFor(post);
+        if (annan) {
+          aterstallVila(annan);
+        }
       }
     });
-    sattVikt(VIKT.jamn);
 
     const poster = synligaRekt(mosaik);
+    const slot = slotFor(el);
+    if (slot) {
+      vaxIRuta(mosaik, slot);
+    }
     el.dataset.storlek = STORLEK.stor;
-    sattVikt(sparFor(el) || el.dataset.ursprung);
     fokusera(id);
 
     vaxer = true;
@@ -159,7 +176,7 @@ export function skapaWm({ mosaik, onAndring }) {
 
   async function minska(id) {
     const el = elFor(id);
-    if (!el || el.dataset.tillstand === "stangd" || vaxer) {
+    if (!el || vaxer) {
       return;
     }
     const rut = el.dataset.lage === LAGE.rut;
@@ -175,7 +192,10 @@ export function skapaWm({ mosaik, onAndring }) {
     }
     if (stor) {
       el.dataset.storlek = STORLEK.liten;
-      sattVikt(VIKT.jamn);
+      const slot = slotFor(el);
+      if (slot) {
+        aterstallVila(slot);
+      }
     }
     fokusera(id);
 
@@ -200,9 +220,12 @@ export function skapaWm({ mosaik, onAndring }) {
     fonstren().forEach((post) => {
       if (post.dataset.storlek === STORLEK.stor) {
         post.dataset.storlek = STORLEK.liten;
+        const annan = slotFor(post);
+        if (annan) {
+          aterstallVila(annan);
+        }
       }
     });
-    sattVikt(VIKT.jamn);
 
     const first = firstRect || el.getBoundingClientRect();
     mosaik.dataset.lage = LAGE.rut;

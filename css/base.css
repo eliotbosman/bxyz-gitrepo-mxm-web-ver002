@@ -13,6 +13,17 @@
     min-block-size: 100%;
   }
 
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
   button {
     font: inherit;
     color: inherit;
@@ -33,10 +44,19 @@
   html {
     font-family: var(--font-fonster);
     font-size: var(--typ-1);
+    font-weight: var(--font-vikt-fonster);
     color: var(--mael-bg);
-    background: var(--mael-txt);
+    background-color: var(--prov-falt);
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -47,8 +67,16 @@
 
   body {
     min-block-size: 100dvh;
-    background: var(--mael-txt);
+    background-color: var(--prov-falt);
     color: var(--mael-bg);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   :focus {
@@ -67,8 +95,8 @@
 
   .hoppa-till {
     position: absolute;
-    inset-block-start: var(--matt-1);
-    inset-inline-start: var(--matt-1);
+    inset-block-start: calc(var(--matt-1) + var(--saker-block-start));
+    inset-inline-start: calc(var(--matt-1) + var(--saker-inline-start));
     z-index: var(--z-hoppa);
     transform: translateY(-200%);
   }
@@ -79,11 +107,15 @@
 }
 
 @layer layout {
+  .krom {
+    display: contents;
+  }
+
   .horn {
     position: fixed;
     z-index: var(--z-horn);
     width: max-content;
-    max-width: calc(100vw - 2 * var(--matt-2));
+    max-width: calc(100vw - var(--saker-inline-start) - var(--saker-inline-end) - 2 * var(--matt-2));
     margin: 0;
     padding: 0;
     font-family: var(--font-horn);
@@ -94,112 +126,67 @@
   }
 
   .horn-nv {
-    inset-block-start: var(--matt-2);
-    inset-inline-start: var(--matt-2);
+    inset-block-start: calc(var(--matt-2) + var(--saker-block-start));
+    inset-inline-start: calc(var(--matt-2) + var(--saker-inline-start));
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .horn-nh {
-    inset-block-start: var(--matt-2);
-    inset-inline-end: var(--matt-2);
-  }
-
-  .horn-sv {
-    inset-block-end: var(--matt-2);
-    inset-inline-start: var(--matt-2);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--matt-1);
-  }
-
-  .horn-sh {
-    inset-block-end: var(--matt-2);
-    inset-inline-end: var(--matt-2);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .prov-yta {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-prov);
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .prov-yta::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: var(--prov-bild);
-    background-size: cover;
-    background-position: center;
-    transform: scale(var(--prov-skala));
-    filter: blur(var(--prov-sudd));
-
   }
 
   .mosaik {
     position: relative;
     display: grid;
-    grid-template-columns: var(--mosaik-spar);
-    gap: var(--matt-1);
-    padding: var(--matt-2);
+    grid-template-columns: repeat(var(--rut-kol), minmax(0, var(--kol-bredd)));
+    grid-auto-rows: var(--rad-hojd);
+    column-gap: var(--matt-1);
+    row-gap: var(--matt-1);
+    justify-content: start;
+    align-items: start;
+    padding-block-start: calc(var(--matt-2) + var(--saker-block-start));
+    padding-block-end: calc(var(--matt-2) + var(--saker-block-end));
+    padding-inline-start: calc(var(--matt-2) + var(--saker-inline-start));
+    padding-inline-end: calc(var(--matt-2) + var(--saker-inline-end));
     min-block-size: 100dvh;
     z-index: var(--z-mosaik);
-    align-items: start;
   }
 
-  .mosaik[data-vikt="jamn"] {
-    --mosaik-spar: 1fr 2fr 1fr;
+  .mosaik[data-dra="pa"],
+  .mosaik[data-dra="pa"] *,
+  .mosaik[data-skala="pa"],
+  .mosaik[data-skala="pa"] * {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
-  .mosaik[data-vikt="v"] {
-    --mosaik-spar: var(--mosaik-spar-v);
+  .mosaik[data-dra="pa"],
+  .mosaik[data-dra="pa"] * {
+    cursor: grabbing;
   }
 
-  .mosaik[data-vikt="m"] {
-    --mosaik-spar: var(--mosaik-spar-m);
+  .mosaik[data-skala="pa"] * {
+    cursor: inherit;
   }
 
-  .mosaik[data-vikt="h"] {
-    --mosaik-spar: var(--mosaik-spar-h);
-  }
-
-  .spar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--matt-1);
-    min-inline-size: 0;
-  }
-
-  .spar[data-spar="v"] {
-    grid-column: 1;
-  }
-
-  .spar[data-spar="m"] {
-    grid-column: 2;
-  }
-
-  .spar[data-spar="h"] {
-    grid-column: 3;
-  }
-
-  .mosaik-vakt {
-    grid-column: 1 / -1;
-    block-size: var(--rad-hojd);
-    pointer-events: none;
+  .mosaik[data-dra="pa"],
+  .mosaik[data-skala="pa"] {
+    touch-action: none;
   }
 
   .filter {
     position: fixed;
     z-index: var(--z-horn);
-    inset-block-end: var(--matt-2);
-    inset-inline: 0;
+    inset-block-start: auto;
+    inset-block-end: calc(var(--matt-2) + var(--saker-block-end));
+    inset-inline-start: calc(var(--matt-2) + var(--saker-inline-start));
+    inset-inline-end: calc(var(--matt-2) + var(--saker-inline-end));
+    width: max-content;
+    max-width: calc(
+      100vw - var(--saker-inline-start) - var(--saker-inline-end) - 2 * var(--matt-2)
+    );
+    margin-inline: auto;
     display: flex;
     justify-content: center;
     gap: var(--matt-1);
+    padding: var(--filter-skal);
     font-family: var(--font-horn);
     font-size: var(--typ-filter);
     font-weight: var(--font-vikt-horn);
@@ -223,6 +210,10 @@
     display: none;
   }
 
+  .fonster-slot:has([data-kalla="filter"]):not(:has([data-lage="rut"])) {
+    display: none;
+  }
+
   .mosaik[data-lage="rut"] .fonster-slot:not(:has([data-lage="rut"])) {
     visibility: hidden;
   }
@@ -230,88 +221,134 @@
   .mosaik[data-lage="rut"] .fonster-slot:has([data-lage="rut"]) {
     display: block;
   }
-
-  .startlista {
-    display: none;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--matt-1);
-    width: max-content;
-  }
-
-  .startlista[data-tillstand="oppen"] {
-    display: flex;
-  }
-}
-
-@layer components {
-  .startlista a {
-    display: inline-flex;
-  }
-}
-
-@layer utilities {
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
 }
 
 @layer overrides {
   @media (max-width: 47.99rem) {
     :root {
       --rut-kol: 1;
-      --kol-bredd: calc(100vw - 2 * var(--matt-2));
+      --kol-bredd: 100%;
+      --typ-horn: var(--typ-1);
+      --typ-filter: var(--typ-1);
+      --krom-block: calc(
+        var(--saker-block-start) + var(--matt-2) + var(--horn-nv-rader) * var(--piller-rad) +
+          4 * var(--fonster-pad-block) + var(--piller-rad) + 2 * var(--matt-1)
+      );
+      --rut-inset-block-start: var(--krom-block);
+      --rut-inset-block-end: calc(var(--saker-block-end) + var(--matt-2));
     }
 
-    .horn-nv,
-    .horn-nh {
-      position: sticky;
-      top: var(--matt-2);
+    .krom {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--matt-1);
+      align-items: stretch;
+      position: fixed;
+      inset-block-start: 0;
+      inset-inline: 0;
+      z-index: var(--z-horn);
+      box-sizing: border-box;
+      width: 100%;
+      padding-block-start: calc(var(--matt-2) + var(--saker-block-start));
+      padding-block-end: var(--matt-1);
+      padding-inline-start: calc(var(--matt-2) + var(--saker-inline-start));
+      padding-inline-end: calc(var(--matt-2) + var(--saker-inline-end));
+      background: transparent;
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      pointer-events: none;
+    }
+
+    .krom .horn,
+    .krom .filter,
+    .krom .piller {
+      pointer-events: auto;
+    }
+
+    .krom .horn,
+    .krom .filter {
+      position: static;
+      inset: auto;
       width: auto;
-      max-width: 100%;
+      max-width: none;
+      margin: 0;
+      background: transparent;
+      box-shadow: none;
     }
 
-    .horn-nh {
-      text-align: start;
-      inset-inline-end: auto;
+    .krom .horn {
+      min-width: 0;
     }
 
-    .horn-sv,
-    .horn-sh {
-      position: sticky;
-      bottom: var(--matt-2);
-      min-height: 0;
+    .krom .horn-nv .piller {
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow-wrap: anywhere;
     }
 
-    .filter {
-      position: sticky;
-      bottom: var(--matt-2);
+    .krom .filter {
+      display: flex;
+      grid-column: auto;
+      width: 100%;
+      max-width: none;
+      gap: var(--matt-1);
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      line-height: var(--rad-horn);
+    }
+
+    .krom .filter::before {
+      content: none;
+    }
+
+    .krom .filter .glas-innehall {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--matt-1);
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+    }
+
+    .krom .filter .piller {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .krom .horn-nv .piller .glas-innehall {
+      align-items: center;
+      text-align: center;
     }
 
     .mosaik {
       display: flex;
       flex-direction: column;
-      gap: var(--matt-1);
+      align-items: stretch;
+      padding-block-start: var(--krom-block);
+      padding-block-end: calc(var(--matt-2) + var(--saker-block-end));
+      padding-inline-start: calc(var(--matt-2) + var(--saker-inline-start));
+      padding-inline-end: calc(var(--matt-2) + var(--saker-inline-end));
     }
 
-    .spar[data-spar="v"],
-    .spar[data-spar="m"],
-    .spar[data-spar="h"] {
+    .mosaik .fonster-slot {
       grid-column: auto;
-    }
-
-    .mosaik[data-vikt="v"],
-    .mosaik[data-vikt="m"],
-    .mosaik[data-vikt="h"] {
-      --mosaik-spar: 1fr;
+      grid-row: auto;
+      width: 100%;
+      height: auto;
     }
   }
 }

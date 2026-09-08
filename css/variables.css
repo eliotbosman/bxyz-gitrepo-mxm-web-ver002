@@ -3,6 +3,14 @@
 @layer reset, tokens, base, layout, components, utilities, overrides;
 
 @layer tokens {
+  @font-face {
+    font-family: "Pixel Georgia";
+    src: url("../assets/fonts/pixel-georgia.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
   :root {
     --mael-bg: #222222;
     --mael-txt: #1b1b1b;
@@ -16,20 +24,29 @@
 
     --matt-1: var(--typ-1);
     --matt-2: calc(var(--typ-1) * 2);
+    --saker-block-start: env(safe-area-inset-top, 0px);
+    --saker-block-end: env(safe-area-inset-bottom, 0px);
+    --saker-inline-start: env(safe-area-inset-left, 0px);
+    --saker-inline-end: env(safe-area-inset-right, 0px);
     --piller-rad: calc(var(--typ-horn) * 1.05);
-    --horn-nv-rader: 3;
+    --horn-nv-rader: 2;
+    --filter-skal: var(--matt-1);
     --rut-luft: var(--matt-1);
     --rut-inset-block-start: calc(
-      var(--matt-2) + var(--horn-nv-rader) * var(--piller-rad) + 2 * var(--fonster-pad-block) +
-        var(--rut-luft)
+      var(--saker-block-start) + var(--matt-2) + var(--horn-nv-rader) * var(--piller-rad) +
+        2 * var(--fonster-pad-block) + var(--rut-luft)
     );
     --rut-inset-block-end: calc(
-      var(--matt-2) + var(--piller-rad) + 2 * var(--fonster-pad-block) + var(--rut-luft)
+      var(--saker-block-end) + var(--matt-2) + var(--filter-skal) * 2 + var(--piller-rad) +
+        2 * var(--fonster-pad-block) + var(--rut-luft)
     );
-    --rut-inset-inline: var(--matt-2);
+    --rut-inset-inline-start: calc(var(--matt-2) + var(--saker-inline-start));
+    --rut-inset-inline-end: calc(var(--matt-2) + var(--saker-inline-end));
 
-    --font-horn: "Cossette Titre", sans-serif;
-    --font-fonster: "Cossette Texte", "Cossette Titre", sans-serif;
+    --font-sida: "Pixel Georgia", Georgia, serif;
+    --font-horn: var(--font-sida);
+    --font-fonster: var(--font-sida);
+    --font-brod: var(--font-sida);
     --font-vikt-horn: 400;
     --font-vikt-fonster: 400;
     --radhogd: normal;
@@ -37,54 +54,67 @@
     --rut-kol: 4;
     --rut-rad-vy: 19;
     --rad-hojd: calc(
-      (100dvh - 2 * var(--matt-2) - 18 * var(--matt-1)) / var(--rut-rad-vy)
+      (
+          100dvh - var(--saker-block-start) - var(--saker-block-end) - 2 * var(--matt-2) -
+            18 * var(--matt-1)
+        ) / var(--rut-rad-vy)
     );
     --kol-bredd: calc(
-      (100vw - 2 * var(--matt-2) - 3 * var(--matt-1)) / var(--rut-kol)
+      (100vw - var(--saker-inline-start) - var(--saker-inline-end) - 2 * var(--matt-2) -
+        (var(--rut-kol) - 1) * var(--matt-1)) / var(--rut-kol)
     );
 
-    --mosaik-spar: 1fr 2fr 1fr;
-    --mosaik-spar-v: 3fr 0.5fr 0.5fr;
-    --mosaik-spar-m: 0.5fr 3fr 0.5fr;
-    --mosaik-spar-h: 0.5fr 0.5fr 3fr;
+    --kol-start: 1;
+    --rad-start: 1;
+    --kol-spann: 1;
+    --rad-spann: 4;
+    --rad-spann-min: 3;
+    --rad-spann-max: 24;
 
     --fonster-radie: 7px;
-    --fonster-yta: rgb(255 255 255 / 0.18);
-    --fonster-yta-pekare: rgb(255 255 255 / 0.42);
-    --fonster-yta-fallback: color-mix(in srgb, var(--mael-txt) 72%, white);
+    --fonster-yta: rgb(255 255 255 / 0.2);
+    --fonster-yta-pekare: rgb(255 255 255 / 0.3);
+    --fonster-yta-fallback: color-mix(in srgb, white 72%, var(--mael-txt));
     --fonster-pad-block: 12px;
     --fonster-pad-inline: 11px;
-    --fonster-fot-pad-block: 5px;
     --fonster-styr-gap: 4px;
     --fonster-styr-kant-bredd: 1px;
     --fonster-styr-radie: var(--fonster-radie);
     --fonster-radhogd: 18px;
-    --fonster-sudd: 16px;
-    --fonster-sudd-pekare: 36px;
-    --fonster-matt: 1.4;
-    --fonster-ljus: 1.15;
+    --fonster-sudd: 52px;
+    --fonster-sudd-pekare: 72px;
+    --fonster-matt: 1.08;
+    --fonster-ljus: 0.84;
+    --fonster-kontrast: 1.06;
     --fonster-kant-bredd: 1px;
     --fonster-kant-stil: solid;
-    --fonster-kant-farg: rgb(255 255 255 / 0.28);
-    --fonster-kant-topp: rgb(255 255 255 / 0.45);
-    --fonster-kant-botten: rgb(255 255 255 / 0.12);
-    --fonster-skugga: inset 1px 1px 0 var(--fonster-kant-topp),
-      inset -1px -1px 0 var(--fonster-kant-botten);
+    --fonster-kant-farg: rgb(255 255 255 / 0.14);
+    --fonster-kant-topp: rgb(255 255 255 / 0.28);
+    --fonster-kant-botten: rgb(0 0 0 / 0.22);
+    --fonster-skugga: inset 0 1px 0 var(--fonster-kant-topp),
+      inset 0 -14px 28px rgb(0 0 0 / 0.16),
+      inset 0 0 22px rgb(255 255 255 / 0.05),
+      0 10px 28px rgb(0 0 0 / 0.2);
+    --fonster-kant-sudd: inset 0 0 20px 8px rgb(0 0 0 / 0.18);
+    --fonster-korn-sikt: 0.2;
 
+    --prov-falt: var(--mael-txt);
     --prov-bild: url("../assets/test/mael-bg-windows.jpg");
     --prov-sudd: 120px;
     --prov-skala: 1.3;
-
-    --sikt-in: 0;
-    --sikt-hel: 1;
-    --sikt-ut: 0;
+    --prov-korn-yta: url("../assets/prov/korn.webp");
+    --prov-korn-ruta: calc(var(--typ-1) * 10);
 
     --z-prov: 0;
     --z-mosaik: 1;
+    --z-dra: 5;
     --z-rut: 10;
+    --z-rull: 12;
     --z-horn: 20;
-    --z-startlista: 21;
+    --z-skarm: 25;
     --z-hoppa: 30;
+
+    --kant-zon: var(--matt-1);
 
     --dur-storlek: 320ms;
     --dur-sikt: 480ms;

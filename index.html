@@ -1,68 +1,82 @@
 <!-- BXYZ:..:eliot@bosmanxyz.xyz:..:.www.bosmanxyz.xyz -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-skarm="ror">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Maël Xuan Metzger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Maël Metzger</title>
     <meta name="description" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cossette+Titre:wght@400;700&family=Cossette+Texte:wght@400;700&display=swap">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/prov.css">
     <link rel="stylesheet" href="css/windows.css">
+    <link rel="stylesheet" href="css/skarm.css">
   </head>
   <body>
     <a class="hoppa-till" href="#mosaik">Skip to windows</a>
 
-    <div class="prov-yta" aria-hidden="true"></div>
+    <svg class="skarm-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" width="0" height="0">
+      <filter id="skarm-fat" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
+        <feImage id="skarm-karta" result="karta" preserveAspectRatio="none" x="0" y="0" width="100%" height="100%"></feImage>
+        <feDisplacementMap in="SourceGraphic" in2="karta" scale="52" xChannelSelector="R" yChannelSelector="G" result="fat"></feDisplacementMap>
+        <feOffset in="fat" dx="1.1" dy="0" result="r"></feOffset>
+        <feColorMatrix in="r" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="rc"></feColorMatrix>
+        <feOffset in="fat" dx="-1.1" dy="0" result="b"></feOffset>
+        <feColorMatrix in="b" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="bc"></feColorMatrix>
+        <feColorMatrix in="fat" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="gc"></feColorMatrix>
+        <feBlend in="rc" in2="gc" mode="screen" result="rg"></feBlend>
+        <feBlend in="rg" in2="bc" mode="screen" result="rgb"></feBlend>
+        <feGaussianBlur in="rgb" stdDeviation="0.35"></feGaussianBlur>
+      </filter>
+    </svg>
 
-    <h1 class="horn horn-nv">
-      <a class="piller" href="#" data-atgard="skrivbord/hem">
-        <span>Maël</span>
-        <span>Xuan</span>
-        <span>Metzger</span>
-      </a>
-    </h1>
-    <a class="horn horn-nh piller" href="#about" data-atgard="skrivbord/oppna" data-fonster="about">Info</a>
-    <div class="horn horn-sv">
-      <nav class="startlista" id="startlista" aria-label="Start" aria-hidden="true">
-        <a class="piller" href="#about" data-atgard="skrivbord/oppna" data-fonster="about">About</a>
-        <a class="piller" href="#work" data-atgard="skrivbord/oppna" data-fonster="work">Work</a>
-        <a class="piller" href="#personal" data-atgard="skrivbord/oppna" data-fonster="personal">Personal</a>
-        <a class="piller" href="#contact" data-atgard="skrivbord/oppna" data-fonster="contact">Contact</a>
-      </nav>
-      <button type="button" class="piller" id="start-knapp" data-atgard="start/vaxla" aria-expanded="false" aria-controls="startlista">Start</button>
+    <div class="skarm-lins">
+      <div class="prov-yta" aria-hidden="true"></div>
+      <div class="rull-pekare" aria-hidden="true">SCROLL</div>
+
+      <header class="krom">
+        <h1 class="horn horn-nv">
+          <a class="piller" href="#" data-atgard="skrivbord/hem">
+            <span class="glas-innehall">
+              <span>Maël</span>
+              <span>Metzger</span>
+            </span>
+          </a>
+        </h1>
+
+        <nav class="filter" id="filter" aria-label="Browse">
+          <div class="glas-innehall">
+            <a class="piller" href="#art" data-atgard="filter/satt" data-filter="art">Art</a>
+            <a class="piller" href="#music" data-atgard="filter/satt" data-filter="music">Music</a>
+            <a class="piller" href="#design" data-atgard="filter/satt" data-filter="design">Design</a>
+            <a class="piller" href="#info" data-atgard="skrivbord/oppna" data-fonster="info">Info</a>
+            <a class="piller" href="#contact" data-atgard="skrivbord/oppna" data-fonster="contact">Contact</a>
+          </div>
+        </nav>
+      </header>
+
+      <div class="skarm-falt">
+        <main id="mosaik" class="mosaik" data-filter="alla"></main>
+      </div>
     </div>
-    <time class="horn horn-sh piller" id="klocka" datetime="">00:00:00</time>
 
-    <nav class="filter" id="filter" aria-label="Filter">
-      <a class="piller" href="#art" data-atgard="filter/satt" data-filter="art">Art</a>
-      <a class="piller" href="#music" data-atgard="filter/satt" data-filter="music">Music</a>
-      <a class="piller" href="#design" data-atgard="filter/satt" data-filter="design">Design</a>
-      <a class="piller" href="#" data-atgard="filter/satt" data-filter="alla" data-vald="ja" aria-current="true">Reset</a>
-    </nav>
-
-    <main id="mosaik" class="mosaik" data-vikt="jamn" data-filter="alla">
-      <div class="spar" id="spar-v" data-spar="v"></div>
-      <div class="spar" id="spar-m" data-spar="m"></div>
-      <div class="spar" id="spar-h" data-spar="h"></div>
-      <div class="mosaik-vakt" id="mosaik-vakt" aria-hidden="true"></div>
-    </main>
+    <div class="skarm-glas" aria-hidden="true"></div>
 
     <template id="mall-fonster">
       <div class="fonster-slot">
         <article class="fonster" data-fonster="" data-storlek="liten">
-          <header class="fonster-huvud">
-            <h2 class="fonster-rubrik"></h2>
-            <button type="button" data-atgard="fonster/stang" aria-label="Close">X</button>
-          </header>
-          <div class="fonster-kropp"></div>
-          <footer class="fonster-fot">
-            <button type="button" data-atgard="fonster/minska" aria-label="Restore">-</button>
-            <button type="button" data-atgard="fonster/oka" aria-label="Expand">+</button>
-          </footer>
+          <div class="glas-innehall">
+            <header class="fonster-huvud">
+              <h2 class="fonster-rubrik"></h2>
+              <div class="fonster-styr">
+                <button type="button" data-atgard="fonster/minska" aria-label="Restore">-</button>
+                <button type="button" data-atgard="fonster/oka" aria-label="Expand">+</button>
+                <span class="fonster-skala" role="img" aria-label="Resize"><span>↔</span></span>
+                <button type="button" data-atgard="fonster/stang" aria-label="Close">X</button>
+              </div>
+            </header>
+            <div class="fonster-kropp"></div>
+          </div>
         </article>
       </div>
     </template>

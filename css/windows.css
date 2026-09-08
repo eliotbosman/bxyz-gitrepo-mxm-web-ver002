@@ -2,18 +2,24 @@
 
 @layer components {
   .fonster-slot {
-    flex: 0 0 auto;
+    box-sizing: border-box;
     min-inline-size: 0;
     overflow: visible;
+    align-self: stretch;
+    min-block-size: 0;
+    z-index: var(--lager, 1);
+    grid-column: var(--kol-start) / span var(--kol-spann);
+    grid-row: var(--rad-start) / span var(--rad-spann);
   }
 
   .fonster {
     position: relative;
     display: grid;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: minmax(0, 1fr);
     box-sizing: border-box;
     width: 100%;
     block-size: auto;
+    min-block-size: 0;
     overflow: clip;
     background: var(--fonster-yta-fallback);
     border: var(--fonster-kant-bredd) var(--fonster-kant-stil) var(--fonster-kant-farg);
@@ -31,7 +37,8 @@
       opacity var(--dur-sikt) linear;
   }
 
-  .piller {
+  .piller,
+  .filter {
     display: inline-flex;
     box-sizing: border-box;
     width: max-content;
@@ -45,6 +52,15 @@
     color: var(--mael-bg);
   }
 
+  .piller {
+    position: relative;
+  }
+
+  .filter {
+    display: flex;
+    padding: var(--filter-skal);
+  }
+
   .piller.horn-nv,
   .horn-nv .piller {
     display: flex;
@@ -52,7 +68,67 @@
     align-items: flex-start;
   }
 
-  .fonster > * {
+  .horn-nv .piller .glas-innehall {
+    display: flex;
+    flex-direction: column;
+    align-items: inherit;
+  }
+
+  .glas-innehall {
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
+  }
+
+  .piller > .glas-innehall,
+  .filter > .glas-innehall,
+  .fonster > .glas-innehall {
+    z-index: 3;
+  }
+
+  .fonster > .glas-innehall {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-inline-size: 0;
+    min-block-size: 0;
+    height: 100%;
+  }
+
+  .filter .glas-innehall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--matt-1);
+    align-items: stretch;
+  }
+
+  .fonster::before,
+  .piller::before,
+  .filter::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: var(--prov-korn-yta);
+    background-size: var(--prov-korn-ruta) var(--prov-korn-ruta);
+    opacity: var(--fonster-korn-sikt);
+    mix-blend-mode: multiply;
+  }
+
+  .fonster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: var(--fonster-kant-sudd);
+  }
+
+  .fonster > *,
+  .piller > *,
+  .filter > * {
     position: relative;
     z-index: 1;
   }
@@ -61,43 +137,21 @@
     (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
   ) {
     .fonster,
-    .piller {
+    .piller,
+    .filter {
       background: var(--fonster-yta);
       -webkit-backdrop-filter: blur(var(--fonster-sudd)) saturate(var(--fonster-matt))
-        brightness(var(--fonster-ljus));
+        brightness(var(--fonster-ljus)) contrast(var(--fonster-kontrast));
       backdrop-filter: blur(var(--fonster-sudd)) saturate(var(--fonster-matt))
-        brightness(var(--fonster-ljus));
+        brightness(var(--fonster-ljus)) contrast(var(--fonster-kontrast));
     }
 
     .fonster[data-pekare="inne"] {
       background: var(--fonster-yta-pekare);
       -webkit-backdrop-filter: blur(var(--fonster-sudd-pekare)) saturate(var(--fonster-matt))
-        brightness(var(--fonster-ljus));
+        brightness(var(--fonster-ljus)) contrast(var(--fonster-kontrast));
       backdrop-filter: blur(var(--fonster-sudd-pekare)) saturate(var(--fonster-matt))
-        brightness(var(--fonster-ljus));
-    }
-  }
-
-  @supports (animation-timeline: view()) {
-    .fonster[data-storlek="liten"] {
-      animation: sikt-vy var(--dur-sikt) linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-  }
-
-  @keyframes sikt-vy {
-    0% {
-      opacity: var(--sikt-in);
-    }
-    14% {
-      opacity: var(--sikt-hel);
-    }
-    86% {
-      opacity: var(--sikt-hel);
-    }
-    100% {
-      opacity: var(--sikt-ut);
+        brightness(var(--fonster-ljus)) contrast(var(--fonster-kontrast));
     }
   }
 
@@ -114,16 +168,117 @@
     --sikt: 1;
   }
 
-  .fonster[data-storlek="liten"]:not(:has(.fonster-bild)) {
-    min-block-size: calc(
-      var(--enheter, 10) * var(--rad-hojd) + (var(--enheter, 10) - 1) * var(--matt-1)
-    );
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]),
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) * {
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    grid-template-rows: minmax(0, 1fr);
+    block-size: 100%;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) a,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) button {
+    cursor: pointer;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-skala,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-skala * {
+    cursor: nwse-resize;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) > .glas-innehall {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-huvud,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-kropp,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-bild {
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    justify-self: stretch;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-text {
+    flex: 0 0 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-kropp {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rad-hojd);
+    min-block-size: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-bild {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-bild img {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="vanster"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="vanster"] *,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="hoger"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="hoger"] *,
+  .mosaik[data-kant="vanster"],
+  .mosaik[data-kant="hoger"] {
+    cursor: ew-resize;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="topp"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="topp"] *,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="botten"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="botten"] *,
+  .mosaik[data-kant="topp"],
+  .mosaik[data-kant="botten"] {
+    cursor: ns-resize;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="vanster-topp"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="vanster-topp"] *,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="hoger-botten"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="hoger-botten"] *,
+  .mosaik[data-kant="vanster-topp"],
+  .mosaik[data-kant="hoger-botten"] {
+    cursor: nwse-resize;
+  }
+
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="hoger-topp"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="hoger-topp"] *,
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="vanster-botten"],
+  .fonster[data-storlek="liten"]:not([data-lage="rut"])[data-kant="vanster-botten"] *,
+  .mosaik[data-kant="hoger-topp"],
+  .mosaik[data-kant="vanster-botten"] {
+    cursor: nesw-resize;
   }
 
   .fonster[data-storlek="stor"] {
-    grid-template-rows: auto 1fr auto;
-    block-size: calc(100dvh - 2 * var(--matt-2));
-    min-block-size: calc(100dvh - 2 * var(--matt-2));
+    grid-template-rows: minmax(0, 1fr);
+    block-size: 100%;
+    min-block-size: 0;
     animation: none;
     opacity: 1;
     --sikt: 1;
@@ -131,21 +286,30 @@
     scroll-margin-block: var(--matt-2);
   }
 
+  .fonster[data-storlek="stor"] > .glas-innehall {
+    grid-template-rows: auto 1fr;
+  }
+
   .fonster[data-lage="rut"] {
     position: fixed;
     inset-block-start: var(--rut-inset-block-start);
     inset-block-end: var(--rut-inset-block-end);
-    inset-inline: var(--rut-inset-inline);
+    inset-inline-start: var(--rut-inset-inline-start);
+    inset-inline-end: var(--rut-inset-inline-end);
     width: auto;
     block-size: auto;
     min-block-size: calc(
       100dvh - var(--rut-inset-block-start) - var(--rut-inset-block-end)
     );
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: minmax(0, 1fr);
     z-index: var(--z-rut);
     animation: none;
     opacity: 1;
     --sikt: 1;
+  }
+
+  .fonster[data-lage="rut"] > .glas-innehall {
+    grid-template-rows: auto 1fr;
   }
 
   .fonster[data-pekare="inne"] {
@@ -159,7 +323,8 @@
       backdrop-filter: none;
     }
 
-    .piller {
+    .piller,
+    .filter {
       background: var(--fonster-yta-fallback);
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
@@ -178,12 +343,15 @@
     }
   }
 
+  .fonster-slot:has([data-fokus="aktiv"]) {
+    z-index: calc(var(--lager, 1) + 40);
+  }
+
   .fonster[data-fokus="aktiv"] {
     z-index: 1;
   }
 
-  .fonster[data-rorelse],
-  .piller[data-rorelse] {
+  .fonster[data-rorelse] {
     z-index: 2;
     overflow: visible;
     animation: none;
@@ -195,12 +363,34 @@
     z-index: 3;
   }
 
-  .fonster-slot:has([data-tillstand="stangd"]) {
-    display: none;
+  .fonster-slot:has([data-dra="lyft"]),
+  .fonster-slot:has([data-skala="pa"]) {
+    min-block-size: var(--dra-h);
   }
 
-  .fonster-huvud,
-  .fonster-fot {
+  .fonster[data-storlek="liten"][data-dra="lyft"]:not([data-lage="rut"]),
+  .fonster[data-storlek="liten"][data-skala="pa"]:not([data-lage="rut"]) {
+    position: fixed;
+    left: var(--dra-x);
+    top: var(--dra-y);
+    width: var(--dra-w);
+    max-width: none;
+    height: var(--dra-h);
+    block-size: var(--dra-h);
+    min-block-size: 0;
+    z-index: var(--z-dra);
+    margin: 0;
+    pointer-events: none;
+    animation: none;
+    opacity: 1;
+    --sikt: 1;
+  }
+
+  .fonster[data-storlek="liten"][data-dra="lyft"]:not([data-lage="rut"]) {
+    cursor: grabbing;
+  }
+
+  .fonster-huvud {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -209,13 +399,15 @@
     padding-inline: var(--fonster-pad-inline);
   }
 
-  .fonster-fot {
-    justify-content: flex-end;
+  .fonster-styr {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
     gap: var(--fonster-styr-gap);
-    padding-block: var(--fonster-fot-pad-block);
   }
 
   .fonster-rubrik {
+    min-width: 0;
     margin: 0;
     font-size: var(--typ-1);
     font-weight: var(--font-vikt-fonster);
@@ -229,12 +421,64 @@
   .fonster-kropp {
     min-block-size: 0;
     padding-inline: var(--fonster-pad-inline);
-    overflow: auto;
+    overflow: visible;
     overflow-wrap: break-word;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .fonster[data-lage="rut"] .fonster-kropp,
+  .fonster[data-storlek="stor"] .fonster-kropp {
+    overflow: auto;
+  }
+
+  .fonster-kropp::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .rull-pekare {
+    position: fixed;
+    left: var(--rull-x, 0);
+    top: var(--rull-y, 0);
+    z-index: var(--z-rull);
+    display: none;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+    transform: translate(0.4em, -1.1em);
+    font-family: var(--font-fonster);
+    font-size: var(--typ-1);
+    font-weight: var(--font-vikt-fonster);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--mael-bg);
+    text-transform: uppercase;
+  }
+
+  .rull-pekare[data-tillstand="synlig"] {
+    display: block;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .rull-pekare[data-tillstand="synlig"] {
+      display: none;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fonster-kropp[data-rull="ja"] .fonster-text {
+      cursor: none;
+    }
+
+    .fonster-kropp[data-rull="ja"] .fonster-text a {
+      cursor: pointer;
+    }
   }
 
   .fonster-bild {
-    margin: 0 0 1em;
+    margin: 0 0 var(--rad-hojd);
   }
 
   .fonster-bild img {
@@ -245,12 +489,19 @@
 
   .fonster-text {
     min-inline-size: 0;
+    font-family: var(--font-brod);
+    padding-block-end: var(--rad-hojd);
+  }
+
+  .fonster-text sup {
+    font-size: 0.75em;
+    line-height: 1.2;
   }
 
   .fonster[data-lage="rut"] .fonster-kropp:has(.fonster-bild) {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--matt-1);
+    grid-template-columns: 1fr;
+    row-gap: var(--rad-hojd);
     align-items: start;
   }
 
@@ -260,8 +511,31 @@
   }
 
   @media (max-width: 47.99rem) {
-    .fonster[data-lage="rut"] .fonster-kropp:has(.fonster-bild) {
-      grid-template-columns: 1fr;
+    .fonster[data-storlek="liten"]:not([data-lage="rut"]) {
+      height: auto;
+      block-size: auto;
+    }
+
+    .fonster[data-storlek="liten"]:not([data-lage="rut"]) > .glas-innehall {
+      grid-template-rows: auto auto;
+      height: auto;
+    }
+
+    .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-kropp {
+      display: block;
+      height: auto;
+      overflow: visible;
+    }
+
+    .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-bild {
+      flex: none;
+      overflow: visible;
+      margin: 0 0 var(--rad-hojd);
+    }
+
+    .fonster[data-storlek="liten"]:not([data-lage="rut"]) .fonster-bild img {
+      height: auto;
+      object-fit: contain;
     }
   }
 
@@ -288,8 +562,8 @@
     text-underline-offset: 0.15em;
   }
 
-  .fonster-huvud button,
-  .fonster-fot button {
+  .fonster-styr button,
+  .fonster-skala {
     display: inline-grid;
     place-items: center;
     box-sizing: border-box;
@@ -299,5 +573,24 @@
     line-height: 1;
     border: var(--fonster-styr-kant-bredd) solid currentColor;
     border-radius: var(--fonster-styr-radie);
+  }
+
+  .fonster-skala {
+    cursor: nwse-resize;
+    touch-action: none;
+  }
+
+  .fonster-skala > span {
+    display: block;
+    transform: rotate(45deg);
+  }
+
+  .fonster[data-lage="rut"] .fonster-skala,
+  .fonster[data-storlek="stor"] .fonster-skala {
+    display: none;
+  }
+
+  .fonster:not([data-lage="rut"]) .fonster-huvud [data-atgard="fonster/stang"] {
+    display: none;
   }
 }

@@ -1,0 +1,22 @@
+/* BXYZ:..:eliot@bosmanxyz.xyz:..:.www.bosmanxyz.xyz */
+
+@layer layout {
+  .prov-yta {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-prov);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .prov-yta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--prov-bild);
+    background-size: cover;
+    background-position: center;
+    transform: scale(var(--prov-skala));
+    filter: blur(var(--prov-sudd));
+  }
+}
